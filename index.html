@@ -10,7 +10,7 @@
       sessionStorage.setItem("playerName", playerName.trim());
     } else {
       playerName = "Jugador Anónimo";
-      sessionStorage.setItem("playerName", playerName);
+      sessionStorage.setItem("playerName", playerName);alert("🎉 ¡Felicidades, " + playerName + "!\n✅ Juego completado exitosamente.\n⏱ Tiempo: " + tiempo + " segundos\n🔢 Movimientos: " + movimientos);
     }
   }
 </script>
@@ -145,8 +145,7 @@
         const fin = new Date();
         const tiempo = ((fin - inicio) / 1000).toFixed(2);
         document.getElementById("mensaje").innerText =
-          `alert("🎉 ¡Felicidades, " + playerName + "!\n✅ Juego completado exitosamente.\n⏱ Tiempo: " + tiempo + " segundos\n🔢 Movimientos: " + movimientos);
-✅ ¡Juego completado! Movimientos: ${totalMovs}, Tiempo: ${tiempo} segundos.`;
+          `✅ ¡Juego completado! Movimientos: ${totalMovs}, Tiempo: ${tiempo} segundos.`;
       }
     }
 
