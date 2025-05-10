@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego de N Reinas</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; }
+    #tablero { display: grid; margin: 20px auto; gap: 2px; }
+    .celda {
+      width: 40px; height: 40px;
+      background-color: #f0d9b5;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 30px;
+    }
+    .celda.negra { background-color: #b58863; }
+    button { margin: 10px; padding: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Juego de N Reinas</h1>
+  <label for="n">Número de reinas (N):</label>
+  <input type="number" id="n" value="8" min="4" max="20">
+  <button onclick="resolverNReinas()">Resolver</button>
+  <button onclick="reiniciar()">Reiniciar</button>
+  <div id="tablero"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_DOMINIO.firebaseapp.com",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_BUCKET",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let soluciones = [];
+
+    function esValido(sol, fila, col) {
+      for (let i = 0; i < fila; i++) {
+        if (sol[i] === col || Math.abs(i - fila) === Math.abs(sol[i] - col)) return false;
+      }
+      return true;
+    }
+
+    function backtrack(n, fila, sol) {
+      if (fila === n) {
+        soluciones.push([...sol]);
+        return;
+      }
+      for (let col = 0; col < n; col++) {
+        if (esValido(sol, fila, col)) {
+          sol[fila] = col;
+          backtrack(n, fila + 1, sol);
+        }
+      }
+    }
+
+    window.resolverNReinas = async function () {
+      const n = parseInt(document.getElementById("n").value);
+      soluciones = [];
+      backtrack(n, 0, new Array(n));
+      mostrarTablero(soluciones[0], n);
+      await addDoc(collection(db, "partidas"), {
+        fecha: new Date().toISOString(),
+        tamaño: n,
+        solucionEncontrada: true
+      });
+    }
+
+    window.reiniciar = function () {
+      document.getElementById("tablero").innerHTML = "";
+    }
+
+    function mostrarTablero(solucion, n) {
+      const tablero = document.getElementById("tablero");
+      tablero.style.gridTemplateColumns = `repeat(${n}, 40px)`;
+      tablero.innerHTML = "";
+      for (let fila = 0; fila < n; fila++) {
+        for (let col = 0; col < n; col++) {
+          const celda = document.createElement("div");
+          celda.className = "celda" + ((fila + col) % 2 ? " negra" : "");
+          if (solucion[fila] === col) {
+            celda.textContent = "♛";
+          }
+          tablero.appendChild(celda);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
