@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Juego de N Reinas Interactivo</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; }
+    #tablero { display: grid; margin: 20px auto; gap: 2px; }
+    .celda {
+      width: 40px; height: 40px;
+      background-color: #f0d9b5;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 30px; cursor: pointer;
+    }
+    .celda.negra { background-color: #b58863; }
+    .celda.verde { background-color: #90ee90 !important; }
+    .celda.atacada { background-color: #ffb3b3 !important; }
+  </style>
+</head>
+<body>
+  <h1>Juego de N Reinas Interactivo</h1>
+  <label for="n">Tamaño del tablero:</label>
+  <input type="number" id="n" value="8" min="4" max="12">
+  <button onclick="crearTablero()">Crear Tablero</button>
+  <button onclick="reiniciar()">Reiniciar</button>
+  <div id="tablero"></div>
+
+  <script>
+    let tablero = [];
+    let n = 8;
+
+    function crearTablero() {
+      n = parseInt(document.getElementById("n").value);
+      const contenedor = document.getElementById("tablero");
+      contenedor.innerHTML = "";
+      contenedor.style.gridTemplateColumns = `repeat(${n}, 40px)`;
+      tablero = [];
+
+      for (let fila = 0; fila < n; fila++) {
+        let filaTablero = [];
+        for (let col = 0; col < n; col++) {
+          const celda = document.createElement("div");
+          celda.className = "celda" + ((fila + col) % 2 ? " negra" : "");
+          celda.dataset.fila = fila;
+          celda.dataset.col = col;
+          celda.addEventListener("click", manejarClick);
+          contenedor.appendChild(celda);
+          filaTablero.push(celda);
+        }
+        tablero.push(filaTablero);
+      }
+    }
+
+    function manejarClick(e) {
+      const celda = e.target;
+      const fila = parseInt(celda.dataset.fila);
+      const col = parseInt(celda.dataset.col);
+
+      // Si ya tiene reina, la quitamos
+      if (celda.textContent === "♛") {
+        celda.textContent = "";
+        limpiarColores();
+        return;
+      }
+
+      // Limpiar antes de colocar otra reina
+      limpiarColores();
+      celda.textContent = "♛";
+      marcarAmenazas(fila, col);
+    }
+
+    function limpiarColores() {
+      for (let fila of tablero) {
+        for (let celda of fila) {
+          celda.classList.remove("verde", "atacada");
+          if (celda.textContent !== "♛") celda.textContent = "";
+        }
+      }
+    }
+
+    function marcarAmenazas(fila, col) {
+      for (let i = 0; i < n; i++) {
+        if (i !== fila) tablero[i][col].classList.add("atacada");
+        if (i !== col) tablero[fila][i].classList.add("atacada");
+
+        if (fila + i < n && col + i < n) tablero[fila + i][col + i].classList.add("atacada");
+        if (fila - i >= 0 && col - i >= 0) tablero[fila - i][col - i].classList.add("atacada");
+        if (fila + i < n && col - i >= 0) tablero[fila + i][col - i].classList.add("atacada");
+        if (fila - i >= 0 && col + i < n) tablero[fila - i][col + i].classList.add("atacada");
+      }
+
+      // Marcar verdes donde podría ir otra reina (solo celdas no atacadas ni con reina)
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+          const celda = tablero[i][j];
+          if (!celda.classList.contains("atacada") && celda.textContent === "") {
+            celda.classList.add("verde");
+          }
+        }
+      }
+    }
+
+    function reiniciar() {
+      crearTablero();
+    }
+
+    crearTablero();
+  </script>
+</body>
+</html>
