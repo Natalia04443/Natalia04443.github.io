@@ -1,0 +1,51 @@
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    margin: 0;
+}
+#board {
+    display: grid;
+    margin: 20px auto;
+}
+.cell {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+.cell.safe {
+    background-color: #c8f7c5;
+}
+.cell.attacked {
+    background-color: #f8c8c8;
+}
+.cell.queen {
+    background-color: #ffe680;
+}
+#controls {
+    margin: 10px;
+}
+#rules {
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: left;
+}
+.overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.popup {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+}
