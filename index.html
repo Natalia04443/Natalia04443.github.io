@@ -2,6 +2,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <script>
+  let playerName = sessionStorage.getItem("playerName");
+  if (!playerName) {
+    playerName = prompt("Por favor, ingresa tu nombre o apodo:");
+    if (playerName && playerName.trim() !== "") {
+      sessionStorage.setItem("playerName", playerName.trim());
+    } else {
+      playerName = "Jugador Anónimo";
+      sessionStorage.setItem("playerName", playerName);
+    }
+  }
+</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Juego de N Reinas</title>
@@ -133,7 +145,8 @@
         const fin = new Date();
         const tiempo = ((fin - inicio) / 1000).toFixed(2);
         document.getElementById("mensaje").innerText =
-          `✅ ¡Juego completado! Movimientos: ${totalMovs}, Tiempo: ${tiempo} segundos.`;
+          `alert("🎉 ¡Felicidades, " + playerName + "!\n✅ Juego completado exitosamente.\n⏱ Tiempo: " + tiempo + " segundos\n🔢 Movimientos: " + movimientos);
+✅ ¡Juego completado! Movimientos: ${totalMovs}, Tiempo: ${tiempo} segundos.`;
       }
     }
 
