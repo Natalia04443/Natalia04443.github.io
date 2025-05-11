@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Juego de N Reinas</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 { text-align: center; }
+    #tablero {
+      display: grid;
+      margin: 20px 0;
+      gap: 2px;
+    }
+    .celda {
+      width: 40px;
+      height: 40px;
+      background-color: #f0d9b5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 30px;
+      cursor: pointer;
+    }
+    .celda.negra { background-color: #b58863; }
+    .celda.atacada { background-color: #ff9999 !important; }
+    .celda.valida { background-color: #90ee90 !important; }
+    #reglas {
+      max-width: 700px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #controles {
+      margin-top: 10px;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    #mensaje {
+      margin-top: 10px;
+      font-weight: bold;
+      color: green;
+    }
+    #soluciones {
+      margin-top: 10px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>Juego de N Reinas</h1>
+  <div>
+    <label for="n">Tamaño del tablero (N):</label>
+    <input type="number" id="n" min="4" max="12" value="8">
+    <button onclick="crearTablero()">Crear Tablero</button>
+  </div>
+  <div id="controles">
+    <button onclick="reiniciar()">Reiniciar juego</button>
+    <button onclick="deshacer()">Deshacer movimiento</button>
+    <button onclick="resolver()">Resolver</button>
+  </div>
+  <div id="mensaje"></div>
+  <div id="soluciones"></div>
+  <div id="tablero"></div>
+
+  <div id="reglas">
+    <h3>Reglas del Juego</h3>
+    <p>El juego de las N reinas tiene una regla principal: colocar N reinas en un tablero de ajedrez de N x N de forma que ninguna reina pueda atacar a otra.</p>
+    <ul>
+      <li><strong>El tablero:</strong> Se juega en un tablero de tamaño N x N, donde N es el número de reinas a colocar.</li>
+      <li><strong>Regla fundamental:</strong> Ninguna reina puede estar en la misma fila, columna o diagonal que otra.</li>
+      <li><strong>Objetivo:</strong> Colocar las N reinas cumpliendo esta regla.</li>
+      <li><strong>Soluciones:</strong> Existen una o más soluciones para N ≥ 4, excepto N = 2 y N = 3.</li>
+      <li><strong>Ejemplo:</strong> En un tablero de 8x8 se deben colocar 8 reinas sin que se amenacen entre sí.</li>
+    </ul>
+    <p><strong>Resumen:</strong> Es un acertijo lógico de disposición estratégica de piezas de ajedrez.</p>
+  </div>
+
+  <script>
+    let n = 8, tablero = [], movimientos = [], inicio, totalMovs = 0;
+
+    let jugador = sessionStorage.getItem('jugador');
+    if (!jugador) {
+      jugador = prompt('Ingresa tu nombre o apodo:');
+      if (jugador && jugador.trim() !== '') {
+        sessionStorage.setItem('jugador', jugador.trim());
+      } else {
+        jugador = 'Jugador anónimo';
+      }
+    }
+
+    function crearTablero() {
+      n = parseInt(document.getElementById("n").value);
+      const contenedor = document.getElementById("tablero");
+      contenedor.innerHTML = "";
+      contenedor.style.gridTemplateColumns = `repeat(${n}, 40px)`;
+      tablero = [];
+      movimientos = [];
+      totalMovs = 0;
+      inicio = new Date();
+      document.getElementById("mensaje").innerText = "";
+      document.getElementById("soluciones").innerText = "";
+
+      for (let fila = 0; fila < n; fila++) {
+        const filaArr = [];
+        for (let col = 0; col < n; col++) {
+          const celda = document.createElement("div");
+          celda.className = "celda" + ((fila + col) % 2 ? " negra" : "");
+          celda.dataset.fila = fila;
+          celda.dataset.col = col;
+          celda.addEventListener("click", manejarClick);
+          contenedor.appendChild(celda);
+          filaArr.push(celda);
+        }
+        tablero.push(filaArr);
+      }
+      actualizarColores();
+      mostrarCantidadDeSoluciones();
+    }
+
+    function manejarClick(e) {
+      const celda = e.target;
+      const fila = parseInt(celda.dataset.fila);
+      const col = parseInt(celda.dataset.col);
+
+      if (!celda.classList.contains("valida")) return;
+
+      celda.textContent = "♛";
+      movimientos.push({ fila, col });
+      totalMovs++;
+      actualizarColores();
+
+      if (movimientos.length === n) {
+        const fin = new Date();
+        const tiempo = ((fin - inicio) / 1000).toFixed(2);
+        document.getElementById("mensaje").innerText =
+          `✅ ¡${jugador}, completaste el juego! Movimientos: ${totalMovs}, Tiempo: ${tiempo} segundos.`;
+      }
+    }
+
+    function actualizarColores() {
+      let atacadas = Array.from({ length: n }, () => Array(n).fill(false));
+      for (let fila of tablero)
+        for (let celda of fila) {
+          celda.classList.remove("valida", "atacada");
+          if (celda.textContent !== "♛") celda.textContent = "";
+        }
+
+      for (let { fila, col } of movimientos) {
+        for (let i = 0; i < n; i++) {
+          atacadas[fila][i] = true;
+          atacadas[i][col] = true;
+          if (fila + i < n && col + i < n) atacadas[fila + i][col + i] = true;
+          if (fila - i >= 0 && col - i >= 0) atacadas[fila - i][col - i] = true;
+          if (fila + i < n && col - i >= 0) atacadas[fila + i][col - i] = true;
+          if (fila - i >= 0 && col + i < n) atacadas[fila - i][col + i] = true;
+        }
+      }
+
+      for (let i = 0; i < n; i++)
+        for (let j = 0; j < n; j++) {
+          const celda = tablero[i][j];
+          if (celda.textContent === "♛") continue;
+          if (atacadas[i][j]) celda.classList.add("atacada");
+          else celda.classList.add("valida");
+        }
+    }
+
+    function reiniciar() {
+      crearTablero();
+    }
+
+    function deshacer() {
+      const ult = movimientos.pop();
+      if (ult) {
+        tablero[ult.fila][ult.col].textContent = "";
+        actualizarColores();
+      }
+    }
+
+    function resolver() {
+      movimientos = [];
+      const sol = [];
+      if (resolverBacktrack(0, sol)) {
+        for (let fila = 0; fila < n; fila++) {
+          const col = sol[fila];
+          tablero[fila][col].textContent = "♛";
+          movimientos.push({ fila, col });
+        }
+        actualizarColores();
+        const fin = new Date();
+        const tiempo = ((fin - inicio) / 1000).toFixed(2);
+        document.getElementById("mensaje").innerText =
+          `✅ ¡Solución automática para ${jugador}! Tiempo: ${tiempo} segundos.`;
+      }
+    }
+
+    function resolverBacktrack(fila, sol) {
+      if (fila === n) return true;
+      for (let col = 0; col < n; col++) {
+        if (esValido(sol, fila, col)) {
+          sol[fila] = col;
+          if (resolverBacktrack(fila + 1, sol)) return true;
+        }
+      }
+      return false;
+    }
+
+    function esValido(sol, fila, col) {
+      for (let i = 0; i < fila; i++) {
+        if (sol[i] === col || Math.abs(sol[i] - col) === Math.abs(i - fila)) return false;
+      }
+      return true;
+    }
+
+    function mostrarCantidadDeSoluciones() {
+      let count = 0;
+      const sol = Array(n).fill(-1);
+      function backtrack(fila) {
+        if (fila === n) {
+          count++;
+          return;
+        }
+        for (let col = 0; col < n; col++) {
+          if (esValido(sol, fila, col)) {
+            sol[fila] = col;
+            backtrack(fila + 1);
+          }
+        }
+      }
+      backtrack(0);
+      document.getElementById("soluciones").innerText = `Número de soluciones posibles para un tablero de ${n}x${n}: ${count}`;
+    }
+
+    crearTablero();
+  </script>
+</body>
+</html>
