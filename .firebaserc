@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "juego-de-n-reinas",
+    "juego-de-n-reinas": "juego-de-n-reinas"
+  },
+  "targets": {},
+  "etags": {}
+}
