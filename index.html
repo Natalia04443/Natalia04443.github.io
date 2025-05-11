@@ -2,18 +2,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <script>
-  let playerName = sessionStorage.getItem("playerName");
-  if (!playerName) {
-    playerName = prompt("Por favor, ingresa tu nombre o apodo:");
-    if (playerName && playerName.trim() !== "") {
-      sessionStorage.setItem("playerName", playerName.trim());
-    } else {
-      playerName = "Jugador Anónimo";
-      sessionStorage.setItem("playerName", playerName);alert("🎉 ¡Felicidades, " + playerName + "!\n✅ Juego completado exitosamente.\n⏱ Tiempo: " + tiempo + " segundos\n🔢 Movimientos: " + movimientos);
-    }
-  }
-</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Juego de N Reinas</title>
