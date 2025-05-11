@@ -2,6 +2,19 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <title>Juego de las N Reinas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="nombreJugadorModal" class="modal">
+        <div class="modal-content">
+            <label for="nombreJugador">Ingresa tu nombre:</label>
+            <input type="text" id="nombreJugador" />
+            <button onclick="guardarNombre()">Aceptar</button>
+        </div>
+    </div>
+    <div id="juegoContainer">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Juego de N Reinas</title>
