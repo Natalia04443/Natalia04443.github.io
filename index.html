@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Juego de las N Reinas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="nombreJugadorModal" class="modal">
+        <div class="modal-content">
+            <label for="nombreJugador">Ingresa tu nombre:</label>
+            <input type="text" id="nombreJugador" />
+            <button onclick="guardarNombre()">Aceptar</button>
+        </div>
+    </div>
+    <div id="juegoContainer">
+        <h1>Juego de las N Reinas</h1>
+        <p id="reglas">
+            El juego de las N reinas tiene una regla principal: colocar N reinas en un tablero de ajedrez de N x N de forma que ninguna reina pueda atacar a otra.<br><br>
+            Desarrollo:<br>
+            - El tablero: Se juega en un tablero de tamaño N x N, donde N es el número de reinas a colocar.<br>
+            - Regla fundamental: Ninguna reina puede estar en la misma fila, columna o diagonal que otra.<br>
+            - Objetivo: Colocar las N reinas cumpliendo esta regla.<br>
+            - Soluciones: Existen una o más soluciones para N ≥ 4, excepto N = 2 y N = 3.<br>
+            - Ejemplo: En un tablero de 8x8 se deben colocar 8 reinas sin que se amenacen entre sí.<br>
+        </p>
+        <label for="nInput">Tamaño del tablero (N):</label>
+        <input type="number" id="nInput" min="4" max="20" value="8" />
+        <button onclick="iniciarJuego()">Iniciar Juego</button>
+        <div id="tablero"></div>
+        <div id="botones">
+            <button onclick="resolver()">Resolver</button>
+            <button onclick="reiniciarJuego()">Reiniciar</button>
+            <button onclick="deshacerMovimiento()">Deshacer</button>
+        </div>
+        <div id="mensajeVictoria"></div>
+        <div id="infoSoluciones"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
