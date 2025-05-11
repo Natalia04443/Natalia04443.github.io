@@ -1,0 +1,26 @@
+name: Deploy to Firebase Hosting on push
+
+on:
+  push:
+    branches:
+      - main  # ¡Importante! Cambia 'main' a 'master' si tu rama principal en GitHub es 'master'
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18' # Puedes ajustar la versión de Node.js si la necesitas diferente
+
+    - name: Install Firebase CLI
+      run: npm install -g firebase-tools
+
+    - name: Deploy to Firebase
+      run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      working-directory: ./ # Esto le dice a GitHub Action dónde encontrar firebase.json y la carpeta public
+
